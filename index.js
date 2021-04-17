@@ -219,7 +219,7 @@ class HigherOrLower {
 class DataBaseAccess {
 
     constructor(hostname = "localhost", username = "root", password = "", database = "discord") {
-        this.pool = mariadb.createPool({host: hostname, user: "root", password: "", database: "discord"});
+        this.pool = mariadb.createPool({host: hostname, user: username, password: password, database: database});
     }
 
     async Query(sql, args) {
