@@ -8,7 +8,9 @@ let isPlaying = false;
 let gamblers = [];
 
 const Text = {
-    userNotInChannel: "Your not in a voice channel"
+    userNotInChannel: "Your not in a voice channel",
+    uSuckLittle: "You suck a little dick",
+    uSuckAlotOfDick: "You suck alot of dick"
 }
 
 client.on("ready", () => {
@@ -179,6 +181,7 @@ function generateRandomNumber() {
     return Math.floor(Math.random() * 100) + 1;
 }
 
+//TODO: Add money to this that people can gamble with
 class HigherOrLower {
     constructor(msg) {
         this.msg = msg;
@@ -194,11 +197,11 @@ class HigherOrLower {
     playerGuess(guess) {
         let nextNumber = generateRandomNumber();
         if (guess.toLowerCase() === "higher" && nextNumber > this.initNumber) {
-            this.msg.reply("you suck, little DICK");
+            this.msg.reply(Text.uSuckLittle);
         } else if (guess.toLowerCase() === "lower" && nextNumber < this.initNumber) {
-            this.msg.reply("you suck, little DICK");
+            this.msg.reply(Text.uSuckLittle);
         } else {
-            this.msg.reply("YOU SUCK BIG TIME");
+            this.msg.reply(Text.uSuckAlotOfDick);
         }
     }
 
@@ -209,6 +212,11 @@ class HigherOrLower {
     generateNumber() {
         return Math.floor(Math.random() * 100) + 1;
     }
+}
+
+//TODO: Finish this
+class Poker {
+
 }
 
 client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
