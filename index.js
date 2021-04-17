@@ -41,7 +41,8 @@ function commandResolver(command, msg) {
         case 'test':
             sendMessageToBotChannel(msg);
             break;
-        case 'play', 'p':
+        case 'p':
+        case 'play':
             addSongToQueue(msg);
             break;
         case 'leave':
@@ -53,15 +54,18 @@ function commandResolver(command, msg) {
         case 'volume':
             changeVolume(msg);
             break;
+        case 'q':
         case 'queue':
             listQueue();
             break;
         case 'skipnext':
             skipNextSong();
             break;
+        case 'hl':
         case 'higherorlower':
             higherOrLower(msg);
             break;
+        case 'g':
         case "guess":
             guess(msg);
             break;
