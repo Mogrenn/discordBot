@@ -1,6 +1,8 @@
 const Discord = require("discord.js");
 const ytdl = require("ytdl-core-discord");
+const mariadb = require('mariadb');
 const client = new Discord.Client();
+const db = new DataBaseAccess();
 const botChannel = "832950711691247636";
 let queue = [];
 let volume = 0.1;
@@ -212,6 +214,27 @@ class HigherOrLower {
     generateNumber() {
         return Math.floor(Math.random() * 100) + 1;
     }
+}
+
+class DataBaseAccess {
+
+    constructor(hostname = "localhost", username = "root", password = "", database = "discord") {
+        this.pool = mariadb.createPool({host: hostname, user: "root", password: "", database: "discord"});
+    }
+
+    async Query(sql, args) {
+        let conn;
+        try {
+            conn = await this.pool.getConnection();
+
+
+        } catch(err) {
+            throw err;
+        } finally {
+            if (conn) await conn.release();
+        }
+    }
+
 }
 
 //TODO: Finish this
