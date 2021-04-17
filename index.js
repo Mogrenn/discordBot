@@ -79,6 +79,11 @@ function commandResolver(command, msg) {
     }
 }
 
+//TODO: finish this
+function helpCommand() {
+
+}
+
 function sendMessageToBotChannel(message) {
     client.channels.cache.get(botChannel).send(message);
 }
@@ -227,7 +232,7 @@ class DataBaseAccess {
         try {
             conn = await this.pool.getConnection();
 
-
+            //TODO: Fix the last things here
         } catch(err) {
             throw err;
         } finally {
