@@ -247,4 +247,14 @@ class Poker {
 
 }
 
+//TODO: Finish this
+class Blackjack {
+
+}
+
+//TODO: Finish this
+class Auction {
+
+}
+
 client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
