@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const ytdl = require("ytdl-core-discord");
 const client = new Discord.Client();
+const botChannel = "832950711691247636";
 let queue = [];
 let volume = 0.1;
 let isPlaying = false;
@@ -30,7 +31,7 @@ function commandResolver(command, msg) {
     }
     switch (command.split("!")[1]) {
         case 'test':
-            replyToAuthor(msg);
+            sendMessageToBotChannel(msg);
             break;
         case 'play':
             addSongToQueue(msg);
@@ -43,10 +44,21 @@ function commandResolver(command, msg) {
             break;
         case 'volume':
             changeVolume(msg);
+            break;
+        case 'queue':
+            listQueue();
+            break;
+        case 'skipnext':
+            skipNextSong();
+            break;
         default:
             msg.channel.send("You are an idiot");
             break;
     }
+}
+
+function sendMessageToBotChannel(message) {
+    client.channels.cache.get(botChannel).send(message);
 }
 
 function replyToAuthor(msg) {
@@ -75,10 +87,18 @@ function addSongToQueue(msg) {
     }
 }
 
+function listQueue() {
+    let songList = "";
+
+}
+
+function skipNextSong() {
+    queue.shift();
+}
+
 function getNextSong() {
     if (queue.length > 0) {
         let nextSong = queue[0];
-        queue.shift();
         return nextSong;
     }
 }
@@ -96,10 +116,12 @@ async function playMusic(connection) {
         type: "opus",
         volume: volume
     }).on("start", () => {
+        sendMessageToBotChannel(`\`\`\`Playing a song now\`\`\``);
         if (!isPlaying)
             isPlaying = true;
     }).on("finish", () => {
         isPlaying = false;
+        queue.shift()
         if (queue.length > 0) {
             playMusic(connection);
         }
