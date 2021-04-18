@@ -51,11 +51,13 @@ function commandResolver(command:CommandResolver) {
         case 'join':
             break;
         case 'volume':
+            changeVolume(parseInt(args));
             break;
         case 'q':
         case 'queue':
             break;
         case 'skipnext':
+            skipNextSong();
             break;
         case 'skip':
             skipCurrentSong();
@@ -103,4 +105,7 @@ function skipCurrentSong() {
     player.skipCurrentSong();
 }
 
-client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
+//Cherrys bot
+client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
+//Dev bot
+//client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");

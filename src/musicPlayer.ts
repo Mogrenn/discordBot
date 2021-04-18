@@ -118,6 +118,7 @@ export class MusicPlayer {
     }
 
     setVolume(newVolume:number) {
+        newVolume = newVolume > 100 ? 100 : newVolume;
         this.volume = newVolume * 0.001;
     }
 

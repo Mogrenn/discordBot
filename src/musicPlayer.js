@@ -51,6 +51,12 @@ class MusicPlayer {
     }
     skipCurrentSong() {
         this.dispatcher.destroy();
+        if (this.queue.length > 0) {
+            this.playMusic();
+        }
+        else {
+            this.isPlaying = false;
+        }
     }
     skipNextSong() {
         if (this.queue.length >= 2) {
@@ -64,13 +70,14 @@ class MusicPlayer {
     }
     joinChannelToPlayMusic() {
         this.channel.join().then((connection) => __awaiter(this, void 0, void 0, function* () {
-            yield this.playMusic(connection);
+            this.connection = connection;
+            yield this.playMusic();
         }));
     }
-    playMusic(connection) {
+    playMusic() {
         return __awaiter(this, void 0, void 0, function* () {
             let nextSong = this.getNextSong();
-            this.dispatcher = connection.play(yield ytdl(nextSong.link), {
+            this.dispatcher = this.connection.play(yield ytdl(nextSong.link), {
                 type: "opus",
                 volume: this.volume
             }).on("start", () => {
@@ -97,6 +104,7 @@ class MusicPlayer {
         this.channel = channel;
     }
     setVolume(newVolume) {
+        newVolume = newVolume > 100 ? 100 : newVolume;
         this.volume = newVolume * 0.001;
     }
 }
