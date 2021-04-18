@@ -39,7 +39,7 @@ function commandResolver(command) {
             break;
         case 'p':
         case 'play':
-            playMusic(args, command.message.member.voice.channel);
+            playMusic(args, command.message.member.voice.channel, command.message);
             break;
         case 'leave':
             break;
@@ -52,6 +52,9 @@ function commandResolver(command) {
             break;
         case 'skipnext':
             break;
+        case 'skip':
+            skipCurrentSong();
+            break;
         case 'hl':
         case 'higherorlower':
             break;
@@ -63,13 +66,13 @@ function commandResolver(command) {
     }
 }
 function sendMessageToBotChannel(messageToUser) {
-    //@ts-ignore
+    //@ts-ignore selects the wrong type so it cant find send when it works
     client.channels.cache.get(botChannel).send(messageToUser);
 }
 function replyToAuthor(msg, messageToUser) {
     msg.reply(messageToUser);
 }
-function playMusic(arg, channel) {
+function playMusic(arg, channel, message) {
     sendMessageToBotChannel("Searching for song: " + arg);
     player.lookUpSong(arg, channel).then((res) => {
         if (res.success) {
@@ -79,6 +82,15 @@ function playMusic(arg, channel) {
             sendMessageToBotChannel("Could not find song");
         }
     });
+}
+function changeVolume(newVolume) {
+    player.setVolume(newVolume);
+}
+function skipNextSong() {
+    player.skipNextSong();
+}
+function skipCurrentSong() {
+    player.skipCurrentSong();
 }
 client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
 //# sourceMappingURL=main.js.map

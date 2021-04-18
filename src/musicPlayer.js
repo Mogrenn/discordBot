@@ -16,6 +16,7 @@ class MusicPlayer {
         this.volume = 0.1;
         this.queue = [];
         this.isPlaying = false;
+        this.dispatcher = undefined;
     }
     leave(me) {
         me.voice.channel.leave();
@@ -49,6 +50,7 @@ class MusicPlayer {
     listQueue() {
     }
     skipCurrentSong() {
+        this.dispatcher.destroy();
     }
     skipNextSong() {
         if (this.queue.length >= 2) {
@@ -68,7 +70,7 @@ class MusicPlayer {
     playMusic(connection) {
         return __awaiter(this, void 0, void 0, function* () {
             let nextSong = this.getNextSong();
-            let dispatcher = connection.play(yield ytdl(nextSong.link), {
+            this.dispatcher = connection.play(yield ytdl(nextSong.link), {
                 type: "opus",
                 volume: this.volume
             }).on("start", () => {
@@ -95,7 +97,7 @@ class MusicPlayer {
         this.channel = channel;
     }
     setVolume(newVolume) {
-        this.volume = newVolume;
+        this.volume = newVolume * 0.001;
     }
 }
 exports.MusicPlayer = MusicPlayer;

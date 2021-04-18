@@ -1,19 +1,22 @@
 import * as ytdl from "ytdl-core-discord";
-import {GuildMember, VoiceChannel, VoiceConnection} from "discord.js";
+import {GuildMember, StreamDispatcher, VoiceChannel, VoiceConnection} from "discord.js";
 import {QueueSong, ResponseObject} from "../types/types";
 import {videoInfo} from "ytdl-core";
 
 export class MusicPlayer {
     private channel: VoiceChannel | undefined;
+    private connection:VoiceConnection;
     private volume: number;
     private readonly queue: Array<QueueSong>;
     private isPlaying:boolean;
     private timeToNextSongInSeconds:number;
+    private dispatcher: StreamDispatcher | undefined;
 
     constructor() {
         this.volume = 0.1;
         this.queue = [];
         this.isPlaying = false;
+        this.dispatcher = undefined;
     }
 
     leave(me:GuildMember) {
@@ -56,7 +59,12 @@ export class MusicPlayer {
     }
 
     skipCurrentSong() {
-
+        this.dispatcher.destroy();
+        if (this.queue.length > 0) {
+            this.playMusic();
+        } else {
+            this.isPlaying = false;
+        }
     }
 
     skipNextSong() {
@@ -73,13 +81,14 @@ export class MusicPlayer {
 
     joinChannelToPlayMusic() {
         this.channel.join().then(async (connection) => {
-            await this.playMusic(connection);
+            this.connection = connection;
+            await this.playMusic();
         })
     }
 
-    async playMusic(connection:VoiceConnection) {
+    async playMusic() {
         let nextSong:QueueSong = this.getNextSong();
-        let dispatcher = connection.play(await ytdl(nextSong.link), {
+        this.dispatcher = this.connection.play(await ytdl(nextSong.link), {
             type: "opus",
             volume: this.volume
         }).on("start", () => {
@@ -92,7 +101,8 @@ export class MusicPlayer {
             }
         }).on("error", (error) => {
             console.error(error);
-        })
+        });
+
     }
 
     isConnected() {
@@ -107,8 +117,8 @@ export class MusicPlayer {
         this.channel = channel;
     }
 
-    setVolume(newVolume) {
-        this.volume = newVolume;
+    setVolume(newVolume:number) {
+        this.volume = newVolume * 0.001;
     }
 
 }
