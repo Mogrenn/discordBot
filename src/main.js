@@ -42,8 +42,10 @@ function commandResolver(command) {
             playMusic(args, command.message.member.voice.channel, command.message);
             break;
         case 'leave':
+            leaveVoiceChannel(command.message);
             break;
         case 'join':
+            joinVoiceChannel(command.message);
             break;
         case 'volume':
             changeVolume(parseInt(args));
@@ -85,6 +87,12 @@ function playMusic(arg, channel, message) {
             sendMessageToBotChannel("Could not find song");
         }
     });
+}
+function leaveVoiceChannel(msg) {
+    player.leave(msg.guild);
+}
+function joinVoiceChannel(msg) {
+    player.join(msg.member.voice.channel);
 }
 function changeVolume(newVolume) {
     player.setVolume(newVolume);

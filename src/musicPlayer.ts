@@ -27,6 +27,11 @@ export class MusicPlayer {
         this.channel = undefined;
     }
 
+    join(channel:VoiceChannel) {
+        this.channel = channel;
+        this.channel.join().then(() => {});
+    }
+
     //TODO: videoDetails type has field lengthInSeconds, make timer with that
     async lookUpSong(songLink:string, channel:VoiceChannel) : Promise<ResponseObject> {
         try {

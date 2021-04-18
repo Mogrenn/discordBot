@@ -18,10 +18,15 @@ class MusicPlayer {
         this.queue = [];
         this.isPlaying = false;
         this.dispatcher = undefined;
+        this.loopCurrentSong = false;
     }
     leave(me) {
         me.voice.channel.leave();
         this.channel = undefined;
+    }
+    join(channel) {
+        this.channel = channel;
+        this.channel.join().then(() => { });
     }
     //TODO: videoDetails type has field lengthInSeconds, make timer with that
     lookUpSong(songLink, channel) {

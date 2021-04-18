@@ -2,7 +2,7 @@ import { MusicPlayer } from "./musicPlayer";
 import { HigherOrLower } from "./HigherOrLower";
 import { CommandResolver } from "../types/types"
 import * as Discord from "discord.js";
-import {Message, Snowflake, VoiceChannel} from "discord.js";
+import { Message, VoiceChannel } from "discord.js";
 
 const client = new Discord.Client();
 const botChannel = "832950711691247636";
@@ -44,11 +44,13 @@ function commandResolver(command:CommandResolver) {
             break;
         case 'p':
         case 'play':
-            playMusic(args, command.message.member.voice.channel, command.message);
+            playMusic(args, command.message.member.voice.channel);
             break;
         case 'leave':
+            leaveVoiceChannel(command.message);
             break;
         case 'join':
+            joinVoiceChannel(command.message);
             break;
         case 'volume':
             changeVolume(parseInt(args));
@@ -83,7 +85,7 @@ function replyToAuthor(msg:Message, messageToUser:string) {
     msg.reply(messageToUser)
 }
 
-function playMusic(arg, channel:VoiceChannel, message:Message) {
+function playMusic(arg, channel:VoiceChannel) {
     sendMessageToBotChannel("Searching for song: "+arg);
     player.lookUpSong(arg, channel).then((res) =>  {
         if (res.success) {
@@ -92,6 +94,14 @@ function playMusic(arg, channel:VoiceChannel, message:Message) {
             sendMessageToBotChannel("Could not find song");
         }
     });
+}
+
+function leaveVoiceChannel(msg) {
+    player.leave(msg.guild);
+}
+
+function joinVoiceChannel(msg) {
+    player.join(msg.member.voice.channel);
 }
 
 function changeVolume(newVolume:number) {
