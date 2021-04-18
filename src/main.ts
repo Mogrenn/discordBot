@@ -55,6 +55,7 @@ function commandResolver(command:CommandResolver) {
             break;
         case 'q':
         case 'queue':
+            showQueue(command.message);
             break;
         case 'skipnext':
             skipNextSong();
@@ -105,7 +106,11 @@ function skipCurrentSong() {
     player.skipCurrentSong();
 }
 
+function showQueue(msg:Message) {
+    player.listQueue(msg)
+}
+
 //Cherrys bot
-client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
+//client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
 //Dev bot
-//client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
+client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");

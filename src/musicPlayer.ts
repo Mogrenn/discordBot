@@ -1,7 +1,8 @@
 import * as ytdl from "ytdl-core-discord";
-import {GuildMember, StreamDispatcher, VoiceChannel, VoiceConnection} from "discord.js";
+import {GuildMember, StreamDispatcher, VoiceChannel, VoiceConnection, Message} from "discord.js";
 import {QueueSong, ResponseObject} from "../types/types";
 import {videoInfo} from "ytdl-core";
+import * as Discord from "discord.js";
 
 export class MusicPlayer {
     private channel: VoiceChannel | undefined;
@@ -11,12 +12,14 @@ export class MusicPlayer {
     private isPlaying:boolean;
     private timeToNextSongInSeconds:number;
     private dispatcher: StreamDispatcher | undefined;
+    private loopCurrentSong: boolean;
 
     constructor() {
         this.volume = 0.1;
         this.queue = [];
         this.isPlaying = false;
         this.dispatcher = undefined;
+        this.loopCurrentSong = false;
     }
 
     leave(me:GuildMember) {
@@ -54,12 +57,31 @@ export class MusicPlayer {
         }
 }
 
-    listQueue() {
+    listQueue(msg:Message) {
+        let queueEmbed = new Discord.MessageEmbed()
+            .setColor("#89cff0")
+            .setTitle("Current Queue");
 
+        queueEmbed.addField("Now Playing:", this.queue[0].title)
+            .setURL(this.queue[0].link);
+
+        if (this.queue.length > 0) {
+            let fields = [];
+            for (let i = 1; i < this.queue.length; i++) {
+                let songDetails = {name: "test", value: "test"};
+                fields.push(songDetails);
+            }
+            queueEmbed.addFields(fields);
+        }
+
+
+        queueEmbed.addField("test", this.queue.length.toString()+" song(s) in queue | total length");
+        msg.channel.send(queueEmbed);
     }
 
     skipCurrentSong() {
         this.dispatcher.destroy();
+        this.queue.shift();
         if (this.queue.length > 0) {
             this.playMusic();
         } else {
@@ -75,7 +97,6 @@ export class MusicPlayer {
 
     getNextSong() : QueueSong {
         let nextSong:QueueSong = this.queue[0];
-        this.queue.shift();
         return nextSong;
     }
 
@@ -95,7 +116,7 @@ export class MusicPlayer {
 
         }).on("finish", () => {
             if (this.queue.length > 0) {
-
+                this.queue.shift();
             } else {
                 this.isPlaying = false;
             }

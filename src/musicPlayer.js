@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MusicPlayer = void 0;
 const ytdl = require("ytdl-core-discord");
+const Discord = require("discord.js");
 class MusicPlayer {
     constructor() {
         this.volume = 0.1;
@@ -47,10 +48,26 @@ class MusicPlayer {
             this.joinChannelToPlayMusic();
         }
     }
-    listQueue() {
+    listQueue(msg) {
+        let queueEmbed = new Discord.MessageEmbed()
+            .setColor("#89cff0")
+            .setTitle("Current Queue");
+        queueEmbed.addField("Now Playing:", this.queue[0].title)
+            .setURL(this.queue[0].link);
+        if (this.queue.length > 0) {
+            let fields = [];
+            for (let i = 1; i < this.queue.length; i++) {
+                let songDetails = { name: "test", value: "test" };
+                fields.push(songDetails);
+            }
+            queueEmbed.addFields(fields);
+        }
+        queueEmbed.addField("test", this.queue.length.toString() + " song(s) in queue | total length");
+        msg.channel.send(queueEmbed);
     }
     skipCurrentSong() {
         this.dispatcher.destroy();
+        this.queue.shift();
         if (this.queue.length > 0) {
             this.playMusic();
         }
@@ -65,7 +82,6 @@ class MusicPlayer {
     }
     getNextSong() {
         let nextSong = this.queue[0];
-        this.queue.shift();
         return nextSong;
     }
     joinChannelToPlayMusic() {
@@ -83,6 +99,7 @@ class MusicPlayer {
             }).on("start", () => {
             }).on("finish", () => {
                 if (this.queue.length > 0) {
+                    this.queue.shift();
                 }
                 else {
                     this.isPlaying = false;
