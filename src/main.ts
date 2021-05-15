@@ -4,6 +4,7 @@ import { CommandResolver } from "../types/types"
 import * as Discord from "discord.js";
 import { Message, VoiceChannel } from "discord.js";
 
+
 const client = new Discord.Client();
 const botChannel = "832950711691247636";
 let player = new MusicPlayer();
