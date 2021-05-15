@@ -27,7 +27,12 @@ client.on("message", (msg) => {
                 message: msg
             };
         }
-        commandResolver(command);
+        try {
+            commandResolver(command);
+        }
+        catch (e) {
+            msg.reply("Internal ERROR");
+        }
     }
 });
 function commandResolver(command) {
@@ -39,7 +44,7 @@ function commandResolver(command) {
             break;
         case 'p':
         case 'play':
-            playMusic(args, command.message.member.voice.channel, command.message);
+            playMusic(args, command.message.member.voice.channel);
             break;
         case 'leave':
             leaveVoiceChannel(command.message);
@@ -77,7 +82,7 @@ function sendMessageToBotChannel(messageToUser) {
 function replyToAuthor(msg, messageToUser) {
     msg.reply(messageToUser);
 }
-function playMusic(arg, channel, message) {
+function playMusic(arg, channel) {
     sendMessageToBotChannel("Searching for song: " + arg);
     player.lookUpSong(arg, channel).then((res) => {
         if (res.success) {
@@ -107,7 +112,7 @@ function showQueue(msg) {
     player.listQueue(msg);
 }
 //Cherrys bot
-//client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
+client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
 //Dev bot
-client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
+//client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
 //# sourceMappingURL=main.js.map

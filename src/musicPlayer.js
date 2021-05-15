@@ -35,6 +35,7 @@ class MusicPlayer {
                 let response = yield ytdl.getBasicInfo(songLink).then((res) => {
                     this.setChannel(channel);
                     this.timeToNextSongInSeconds += res.videoDetails.lengthSeconds;
+                    this.newQueue.addSong({ title: res.videoDetails.title, link: songLink });
                     this.addSongToQueue({ title: res.videoDetails.title, link: songLink });
                     return res;
                 });

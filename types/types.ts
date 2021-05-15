@@ -20,3 +20,7 @@ export interface ResponseObject {
     data?: any,
     error?: string
 }
+
+export interface SongsToBeRemoved {
+    songList: {}
+}

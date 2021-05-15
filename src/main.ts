@@ -30,7 +30,11 @@ client.on("message", (msg) => {
                 message:msg
             }
         }
-        commandResolver(command);
+        try {
+            commandResolver(command);
+        } catch (e) {
+            msg.reply("Internal ERROR")
+        }
     }
 });
 
@@ -105,7 +109,7 @@ function joinVoiceChannel(msg) {
 }
 
 function changeVolume(newVolume:number) {
-    player.setVolume(newVolume)
+    player.setVolume(newVolume);
 }
 
 function skipNextSong() {
@@ -117,10 +121,10 @@ function skipCurrentSong() {
 }
 
 function showQueue(msg:Message) {
-    player.listQueue(msg)
+    player.listQueue(msg);
 }
 
 //Cherrys bot
-//client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
+client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
 //Dev bot
-client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
+//client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");

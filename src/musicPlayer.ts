@@ -3,12 +3,14 @@ import {GuildMember, StreamDispatcher, VoiceChannel, VoiceConnection, Message} f
 import {QueueSong, ResponseObject} from "../types/types";
 import {videoInfo} from "ytdl-core";
 import * as Discord from "discord.js";
+import {Queue} from "./queue";
 
 export class MusicPlayer {
     private channel: VoiceChannel | undefined;
     private connection:VoiceConnection;
     private volume: number;
     private readonly queue: Array<QueueSong>;
+    private newQueue:Queue;
     private isPlaying:boolean;
     private timeToNextSongInSeconds:number;
     private dispatcher: StreamDispatcher | undefined;
@@ -38,6 +40,7 @@ export class MusicPlayer {
             let response:videoInfo = await ytdl.getBasicInfo(songLink).then((res) => {
                 this.setChannel(channel);
                 this.timeToNextSongInSeconds += res.videoDetails.lengthSeconds;
+                this.newQueue.addSong({title: res.videoDetails.title, link: songLink});
                 this.addSongToQueue({title: res.videoDetails.title, link: songLink});
                 return res;
             });
