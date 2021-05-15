@@ -32,7 +32,7 @@ client.on("message", async (msg) => {
             }
         }
         try {
-            commandResolver(command);
+            await commandResolver(command);
         } catch (e) {
             console.warn(e)
             await msg.reply("Internal ERROR")
@@ -40,36 +40,36 @@ client.on("message", async (msg) => {
     }
 });
 
-function commandResolver(command:CommandResolver) {
+async function commandResolver(command:CommandResolver) {
     let com:string = command.command.split("!")[1];
     let args:string = command.arguments;
 
     switch (com) {
         case 'test':
-            sendMessageToBotChannel("test");
+            await sendMessageToBotChannel("test");
             break;
         case 'p':
         case 'play':
-            playMusic(args, command.message.member.voice.channel);
+            await playMusic(args, command.message.member.voice.channel);
             break;
         case 'leave':
-            leaveVoiceChannel(command.message);
+            await leaveVoiceChannel(command.message);
             break;
         case 'join':
-            joinVoiceChannel(command.message);
+            await joinVoiceChannel(command.message);
             break;
         case 'volume':
-            changeVolume(parseInt(args));
+            await changeVolume(parseInt(args));
             break;
         case 'q':
         case 'queue':
-            showQueue(command.message);
+            await showQueue(command.message);
             break;
         case 'skipnext':
-            skipNextSong();
+            await skipNextSong();
             break;
         case 'skip':
-            skipCurrentSong();
+            await skipCurrentSong();
             break;
         case 'hl':
         case 'higherorlower':
@@ -82,17 +82,17 @@ function commandResolver(command:CommandResolver) {
     }
 }
 
-function sendMessageToBotChannel(messageToUser:string) {
+async function sendMessageToBotChannel(messageToUser:string) {
     //@ts-ignore selects the wrong type so it cant find send when it works
     client.channels.cache.get(botChannel).send(messageToUser);
 }
 
-function replyToAuthor(msg:Message, messageToUser:string) {
-    msg.reply(messageToUser)
+async function replyToAuthor(msg:Message, messageToUser:string) {
+    await msg.reply(messageToUser)
 }
 
-function playMusic(arg, channel:VoiceChannel) {
-    sendMessageToBotChannel("Searching for song: "+arg);
+async function playMusic(arg, channel:VoiceChannel) {
+    await sendMessageToBotChannel("Searching for song: " + arg);
     player.lookUpSong(arg, channel).then((res) =>  {
         if (res.success) {
             sendMessageToBotChannel("Playing song: "+res.data);
@@ -102,19 +102,19 @@ function playMusic(arg, channel:VoiceChannel) {
     });
 }
 
-function leaveVoiceChannel(msg) {
+async function leaveVoiceChannel(msg) {
     player.leave(msg.guild);
 }
 
-function joinVoiceChannel(msg) {
+async function joinVoiceChannel(msg) {
     player.join(msg.member.voice.channel);
 }
 
-function changeVolume(newVolume:number) {
+async function changeVolume(newVolume:number) {
     player.setVolume(newVolume);
 }
 
-function skipNextSong() {
+async function skipNextSong() {
     player.skipNextSong();
 }
 
@@ -122,8 +122,8 @@ async function skipCurrentSong() {
     await player.skipCurrentSong();
 }
 
-function showQueue(msg:Message) {
-    player.listQueue(msg);
+async function showQueue(msg:Message) {
+    await player.listQueue(msg);
 }
 
 //Cherrys bot

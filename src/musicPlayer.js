@@ -86,14 +86,12 @@ class MusicPlayer {
         });
     }
     listQueue(msg) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield msg.channel.send(this.newQueue.listQueue());
+        });
     }
     isConnected() {
-        if (this.channel !== undefined) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return this.channel !== undefined;
     }
     setChannel(channel) {
         this.channel = channel;

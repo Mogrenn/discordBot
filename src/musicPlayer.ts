@@ -91,16 +91,12 @@ export class MusicPlayer {
 
     }
 
-    listQueue(msg:Message) {
-
+    async listQueue(msg:Message) {
+        await msg.channel.send(this.newQueue.listQueue());
     }
 
     isConnected() {
-        if (this.channel !== undefined) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.channel !== undefined;
     }
 
     setChannel(channel:VoiceChannel) {
