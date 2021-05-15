@@ -12,10 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MusicPlayer = void 0;
 const ytdl = require("ytdl-core-discord");
 const Discord = require("discord.js");
+const queue_1 = require("./queue");
 class MusicPlayer {
     constructor() {
         this.volume = 0.1;
         this.queue = [];
+        this.newQueue = new queue_1.Queue();
         this.isPlaying = false;
         this.dispatcher = undefined;
         this.loopCurrentSong = false;
@@ -32,13 +34,13 @@ class MusicPlayer {
     lookUpSong(songLink, channel) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let response = yield ytdl.getBasicInfo(songLink).then((res) => {
-                    this.setChannel(channel);
-                    this.timeToNextSongInSeconds += res.videoDetails.lengthSeconds;
-                    this.newQueue.addSong({ title: res.videoDetails.title, link: songLink });
-                    this.addSongToQueue({ title: res.videoDetails.title, link: songLink });
-                    return res;
-                });
+                console.log(songLink);
+                let response = yield ytdl.getBasicInfo(songLink);
+                this.setChannel(channel);
+                console.log(response);
+                this.timeToNextSongInSeconds += parseInt(response.videoDetails.lengthSeconds);
+                this.newQueue.addSong({ title: response.videoDetails.title, link: songLink });
+                this.addSongToQueue({ title: response.videoDetails.title, link: songLink });
                 return { success: true, data: response.videoDetails.title };
             }
             catch (e) {
@@ -72,14 +74,16 @@ class MusicPlayer {
         msg.channel.send(queueEmbed);
     }
     skipCurrentSong() {
-        this.dispatcher.destroy();
-        this.queue.shift();
-        if (this.queue.length > 0) {
-            this.playMusic();
-        }
-        else {
-            this.isPlaying = false;
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            this.dispatcher.destroy();
+            this.queue.shift();
+            if (this.queue.length > 0) {
+                yield this.playMusic();
+            }
+            else {
+                this.isPlaying = false;
+            }
+        });
     }
     skipNextSong() {
         if (this.queue.length >= 2) {

@@ -19,6 +19,7 @@ export class MusicPlayer {
     constructor() {
         this.volume = 0.1;
         this.queue = [];
+        this.newQueue = new Queue();
         this.isPlaying = false;
         this.dispatcher = undefined;
         this.loopCurrentSong = false;
@@ -37,14 +38,11 @@ export class MusicPlayer {
     //TODO: videoDetails type has field lengthInSeconds, make timer with that
     async lookUpSong(songLink:string, channel:VoiceChannel) : Promise<ResponseObject> {
         try {
-            let response:videoInfo = await ytdl.getBasicInfo(songLink).then((res) => {
-                this.setChannel(channel);
-                this.timeToNextSongInSeconds += res.videoDetails.lengthSeconds;
-                this.newQueue.addSong({title: res.videoDetails.title, link: songLink});
-                this.addSongToQueue({title: res.videoDetails.title, link: songLink});
-                return res;
-            });
-
+            let response:videoInfo = await ytdl.getBasicInfo(songLink);
+            this.setChannel(channel);
+            this.timeToNextSongInSeconds += parseInt(response.videoDetails.lengthSeconds);
+            this.newQueue.addSong({title: response.videoDetails.title, link: songLink});
+            this.addSongToQueue({title: response.videoDetails.title, link: songLink});
             return { success: true, data: response.videoDetails.title }
 
         } catch (e) {
@@ -63,7 +61,7 @@ export class MusicPlayer {
             this.isPlaying = true;
             this.joinChannelToPlayMusic();
         }
-}
+    }
 
     listQueue(msg:Message) {
         let queueEmbed = new Discord.MessageEmbed()
@@ -87,11 +85,11 @@ export class MusicPlayer {
         msg.channel.send(queueEmbed);
     }
 
-    skipCurrentSong() {
+    async skipCurrentSong() {
         this.dispatcher.destroy();
         this.queue.shift();
         if (this.queue.length > 0) {
-            this.playMusic();
+            await this.playMusic();
         } else {
             this.isPlaying = false;
         }

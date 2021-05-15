@@ -13,7 +13,7 @@ client.on("ready", () => {
     console.log("ready");
 });
 
-client.on("message", (msg) => {
+client.on("message", async (msg) => {
     if (msg.author.bot) return;
 
     if (msg.content.startsWith("!")) {
@@ -34,7 +34,8 @@ client.on("message", (msg) => {
         try {
             commandResolver(command);
         } catch (e) {
-            msg.reply("Internal ERROR")
+            console.warn(e)
+            await msg.reply("Internal ERROR")
         }
     }
 });
@@ -126,6 +127,6 @@ function showQueue(msg:Message) {
 }
 
 //Cherrys bot
-client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
+//client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
 //Dev bot
-//client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
+client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const musicPlayer_1 = require("./musicPlayer");
 const Discord = require("discord.js");
@@ -8,7 +17,7 @@ let player = new musicPlayer_1.MusicPlayer();
 client.on("ready", () => {
     console.log("ready");
 });
-client.on("message", (msg) => {
+client.on("message", (msg) => __awaiter(void 0, void 0, void 0, function* () {
     if (msg.author.bot)
         return;
     if (msg.content.startsWith("!")) {
@@ -31,10 +40,11 @@ client.on("message", (msg) => {
             commandResolver(command);
         }
         catch (e) {
-            msg.reply("Internal ERROR");
+            console.warn(e);
+            yield msg.reply("Internal ERROR");
         }
     }
-});
+}));
 function commandResolver(command) {
     let com = command.command.split("!")[1];
     let args = command.arguments;
@@ -112,7 +122,7 @@ function showQueue(msg) {
     player.listQueue(msg);
 }
 //Cherrys bot
-client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
+//client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
 //Dev bot
-//client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
+client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
 //# sourceMappingURL=main.js.map
