@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MusicPlayer = void 0;
 const ytdl = require("ytdl-core-discord");
-const Discord = require("discord.js");
 const queue_1 = require("./queue");
 class MusicPlayer {
     constructor() {
@@ -34,13 +33,11 @@ class MusicPlayer {
     lookUpSong(songLink, channel) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(songLink);
                 let response = yield ytdl.getBasicInfo(songLink);
                 this.setChannel(channel);
-                console.log(response);
                 this.timeToNextSongInSeconds += parseInt(response.videoDetails.lengthSeconds);
                 this.newQueue.addSong({ title: response.videoDetails.title, link: songLink });
-                this.addSongToQueue({ title: response.videoDetails.title, link: songLink });
+                this.joinChannelToPlayMusic();
                 return { success: true, data: response.videoDetails.title };
             }
             catch (e) {
@@ -49,35 +46,10 @@ class MusicPlayer {
             }
         });
     }
-    addSongToQueue(song) {
-        this.queue.push(song);
-        if (!this.isPlaying) {
-            this.isPlaying = true;
-            this.joinChannelToPlayMusic();
-        }
-    }
-    listQueue(msg) {
-        let queueEmbed = new Discord.MessageEmbed()
-            .setColor("#89cff0")
-            .setTitle("Current Queue");
-        queueEmbed.addField("Now Playing:", this.queue[0].title)
-            .setURL(this.queue[0].link);
-        if (this.queue.length > 0) {
-            let fields = [];
-            for (let i = 1; i < this.queue.length; i++) {
-                let songDetails = { name: "test", value: "test" };
-                fields.push(songDetails);
-            }
-            queueEmbed.addFields(fields);
-        }
-        queueEmbed.addField("test", this.queue.length.toString() + " song(s) in queue | total length");
-        msg.channel.send(queueEmbed);
-    }
     skipCurrentSong() {
         return __awaiter(this, void 0, void 0, function* () {
             this.dispatcher.destroy();
-            this.queue.shift();
-            if (this.queue.length > 0) {
+            if (yield this.newQueue.skipCurrentSong()) {
                 yield this.playMusic();
             }
             else {
@@ -86,13 +58,7 @@ class MusicPlayer {
         });
     }
     skipNextSong() {
-        if (this.queue.length >= 2) {
-            this.queue.splice(2);
-        }
-    }
-    getNextSong() {
-        let nextSong = this.queue[0];
-        return nextSong;
+        this.newQueue.skipNextSong();
     }
     joinChannelToPlayMusic() {
         this.channel.join().then((connection) => __awaiter(this, void 0, void 0, function* () {
@@ -102,8 +68,8 @@ class MusicPlayer {
     }
     playMusic() {
         return __awaiter(this, void 0, void 0, function* () {
-            let nextSong = this.getNextSong();
-            this.dispatcher = this.connection.play(yield ytdl(nextSong.link), {
+            let newNextSong = this.newQueue.getNextSong();
+            this.dispatcher = this.connection.play(yield ytdl(newNextSong.link), {
                 type: "opus",
                 volume: this.volume
             }).on("start", () => {
@@ -118,6 +84,8 @@ class MusicPlayer {
                 console.error(error);
             });
         });
+    }
+    listQueue(msg) {
     }
     isConnected() {
         if (this.channel !== undefined) {

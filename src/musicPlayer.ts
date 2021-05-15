@@ -42,7 +42,7 @@ export class MusicPlayer {
             this.setChannel(channel);
             this.timeToNextSongInSeconds += parseInt(response.videoDetails.lengthSeconds);
             this.newQueue.addSong({title: response.videoDetails.title, link: songLink});
-            this.addSongToQueue({title: response.videoDetails.title, link: songLink});
+            this.joinChannelToPlayMusic();
             return { success: true, data: response.videoDetails.title }
 
         } catch (e) {
@@ -52,43 +52,9 @@ export class MusicPlayer {
 
     }
 
-    private addSongToQueue(song:QueueSong) {
-
-        this.queue.push(song);
-
-
-        if (!this.isPlaying) {
-            this.isPlaying = true;
-            this.joinChannelToPlayMusic();
-        }
-    }
-
-    listQueue(msg:Message) {
-        let queueEmbed = new Discord.MessageEmbed()
-            .setColor("#89cff0")
-            .setTitle("Current Queue");
-
-        queueEmbed.addField("Now Playing:", this.queue[0].title)
-            .setURL(this.queue[0].link);
-
-        if (this.queue.length > 0) {
-            let fields = [];
-            for (let i = 1; i < this.queue.length; i++) {
-                let songDetails = {name: "test", value: "test"};
-                fields.push(songDetails);
-            }
-            queueEmbed.addFields(fields);
-        }
-
-
-        queueEmbed.addField("test", this.queue.length.toString()+" song(s) in queue | total length");
-        msg.channel.send(queueEmbed);
-    }
-
     async skipCurrentSong() {
         this.dispatcher.destroy();
-        this.queue.shift();
-        if (this.queue.length > 0) {
+        if (await this.newQueue.skipCurrentSong()) {
             await this.playMusic();
         } else {
             this.isPlaying = false;
@@ -96,14 +62,7 @@ export class MusicPlayer {
     }
 
     skipNextSong() {
-        if (this.queue.length >= 2) {
-            this.queue.splice(2);
-        }
-    }
-
-    getNextSong() : QueueSong {
-        let nextSong:QueueSong = this.queue[0];
-        return nextSong;
+        this.newQueue.skipNextSong();
     }
 
     joinChannelToPlayMusic() {
@@ -114,8 +73,8 @@ export class MusicPlayer {
     }
 
     async playMusic() {
-        let nextSong:QueueSong = this.getNextSong();
-        this.dispatcher = this.connection.play(await ytdl(nextSong.link), {
+        let newNextSong:QueueSong = this.newQueue.getNextSong();
+        this.dispatcher = this.connection.play(await ytdl(newNextSong.link), {
             type: "opus",
             volume: this.volume
         }).on("start", () => {
@@ -129,6 +88,10 @@ export class MusicPlayer {
         }).on("error", (error) => {
             console.error(error);
         });
+
+    }
+
+    listQueue(msg:Message) {
 
     }
 

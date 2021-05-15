@@ -118,8 +118,8 @@ function skipNextSong() {
     player.skipNextSong();
 }
 
-function skipCurrentSong() {
-    player.skipCurrentSong();
+async function skipCurrentSong() {
+    await player.skipCurrentSong();
 }
 
 function showQueue(msg:Message) {

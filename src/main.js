@@ -116,7 +116,9 @@ function skipNextSong() {
     player.skipNextSong();
 }
 function skipCurrentSong() {
-    player.skipCurrentSong();
+    return __awaiter(this, void 0, void 0, function* () {
+        yield player.skipCurrentSong();
+    });
 }
 function showQueue(msg) {
     player.listQueue(msg);

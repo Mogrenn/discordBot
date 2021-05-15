@@ -17,6 +17,11 @@ export class Queue {
 
     }
 
+    async skipCurrentSong(): Promise<boolean> {
+        this.queue.shift();
+        return this.queue.length > 0;
+    }
+
     listQueue() {
         let queueEmbed = new Discord.MessageEmbed()
             .setColor("#89cff0")
@@ -42,7 +47,9 @@ export class Queue {
     }
 
     skipNextSong() {
-        this.queue.splice(2);
+        if (this.queue.length >= 2) {
+            this.queue.splice(2);
+        }
     }
 
     removeSpecificSongs(songPositions:number) {
