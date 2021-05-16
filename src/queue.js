@@ -46,7 +46,10 @@ class Queue {
         return queueEmbed;
     }
     shuffleQueue() {
-        this.queue.sort(() => Math.random() - 0.5);
+        for (let i = this.queue.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [this.queue[i], this.queue[j]] = [this.queue[j], this.queue[i]];
+        }
     }
     skipNextSong() {
         if (this.queue.length >= 2) {
@@ -59,10 +62,7 @@ class Queue {
         }
     }
     removeSong(songPosition) {
-        this.queue.splice(songPosition);
-    }
-    getSize() {
-        return this.queue.length;
+        this.queue.splice(parseInt(songPosition));
     }
 }
 exports.Queue = Queue;

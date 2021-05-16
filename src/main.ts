@@ -144,6 +144,8 @@ async function removeSpecificSongs(msg:Message, args:string) {
 }
 
 //Cherrys bot
-//client.login(process.env.DISCORD_API_TOKEN_PROD);
+if (process.platform === "linux")
+    client.login(process.env.DISCORD_API_TOKEN_PROD);
 //Dev bot
-client.login(process.env.DISCORD_API_TOKEN_DEV);
+if (process.platform === "win32")
+    client.login(process.env.DISCORD_API_TOKEN_DEV);

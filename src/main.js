@@ -157,14 +157,13 @@ function showQueue(msg) {
 }
 function removeSpecificSongs(msg, args) {
     return __awaiter(this, void 0, void 0, function* () {
-        let array = args.split(",");
-        array.map((s) => { return parseInt(s); });
-        array.forEach(s => console.log(typeof s));
-        //player.removeSpecificSongs(array);
+        player.removeSpecificSongs(args.split(","));
     });
 }
 //Cherrys bot
-//client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
+if (process.platform === "linux")
+    client.login(process.env.DISCORD_API_TOKEN_PROD);
 //Dev bot
-client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
+if (process.platform === "win32")
+    client.login(process.env.DISCORD_API_TOKEN_DEV);
 //# sourceMappingURL=main.js.map

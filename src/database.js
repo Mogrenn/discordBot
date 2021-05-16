@@ -11,8 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const mariadb = require('mariadb');
 class DataBaseAccess {
-    constructor(hostname = "localhost", username = "discord", password = "123", database = "discord") {
-        this.pool = mariadb.createPool({ host: hostname, user: username, password: password, database: database });
+    constructor() {
+        this.pool = mariadb.createPool({ host: process.env.DB_HOST, user: process.env.DB_USER, password: process.env.DB_PASSWORD, database: process.env.DB_DB });
     }
     Query(sql, args) {
         return __awaiter(this, void 0, void 0, function* () {
