@@ -5,8 +5,8 @@ const mariadb = require('mariadb');
 
 class DataBaseAccess {
     private pool:Pool;
-    constructor(hostname = "localhost", username = "discord", password = "123", database = "discord") {
-        this.pool = mariadb.createPool({host: hostname, user: username, password: password, database: database});
+    constructor() {
+        this.pool = mariadb.createPool({host: process.env.DB_HOST, user: process.env.DB_USER, password: process.env.DB_PASSWORD, database: process.env.DB_DB});
     }
 
     async Query(sql:string, args:Array<any>): Promise<ResponseObject>{

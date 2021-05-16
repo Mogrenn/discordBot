@@ -144,6 +144,6 @@ async function removeSpecificSongs(msg:Message, args:string) {
 }
 
 //Cherrys bot
-//client.login("NjM2MTQ4ODIzMzg2ODgyMDQ5.Xa7Zwg.xQCM0mIabdRmQ7uDA3ZTJq-xknY");
+//client.login(process.env.DISCORD_API_TOKEN_PROD);
 //Dev bot
-client.login("ODMyOTAwMjYxMDY4NTM3ODY2.YHqg0A.xpQ1_UBCZoDW_yve7fbIxSfU4I4");
+client.login(process.env.DISCORD_API_TOKEN_DEV);
