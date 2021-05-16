@@ -66,8 +66,4 @@ export class Queue {
         this.queue.splice(parseInt(songPosition));
     }
 
-    getSize() {
-        return this.queue.length;
-    }
-
 }
