@@ -161,9 +161,10 @@ function removeSpecificSongs(msg, args) {
     });
 }
 //Cherrys bot
-if (process.platform === "linux")
-    client.login(process.env.DISCORD_API_TOKEN_PROD);
-//Dev bot
-if (process.platform === "win32")
+if (process.env.MODE === "dev") {
     client.login(process.env.DISCORD_API_TOKEN_DEV);
+}
+else if (process.env.MODE === "prod") {
+    client.login(process.env.DISCORD_API_TOKEN_PROD);
+}
 //# sourceMappingURL=main.js.map
