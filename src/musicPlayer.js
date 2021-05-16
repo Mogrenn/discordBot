@@ -15,7 +15,6 @@ const queue_1 = require("./queue");
 class MusicPlayer {
     constructor() {
         this.volume = 0.1;
-        this.queue = [];
         this.newQueue = new queue_1.Queue();
         this.isPlaying = false;
         this.dispatcher = undefined;
@@ -36,8 +35,9 @@ class MusicPlayer {
                 let response = yield ytdl.getBasicInfo(songLink);
                 this.setChannel(channel);
                 this.timeToNextSongInSeconds += parseInt(response.videoDetails.lengthSeconds);
-                this.newQueue.addSong({ title: response.videoDetails.title, link: songLink });
-                this.joinChannelToPlayMusic();
+                if (this.newQueue.addSong({ title: response.videoDetails.title, link: songLink })) {
+                    this.joinChannelToPlayMusic();
+                }
                 return { success: true, data: response.videoDetails.title };
             }
             catch (e) {
@@ -68,14 +68,14 @@ class MusicPlayer {
     }
     playMusic() {
         return __awaiter(this, void 0, void 0, function* () {
-            let newNextSong = this.newQueue.getNextSong();
-            this.dispatcher = this.connection.play(yield ytdl(newNextSong.link), {
+            let nextSong = this.newQueue.getNextSong();
+            this.dispatcher = this.connection.play(yield ytdl(nextSong.link), {
                 type: "opus",
                 volume: this.volume
             }).on("start", () => {
             }).on("finish", () => {
-                if (this.queue.length > 0) {
-                    this.queue.shift();
+                if (this.newQueue.skipCurrentSong()) {
+                    this.playMusic();
                 }
                 else {
                     this.isPlaying = false;
@@ -93,12 +93,21 @@ class MusicPlayer {
     isConnected() {
         return this.channel !== undefined;
     }
+    shuffle() {
+        this.newQueue.shuffleQueue();
+    }
     setChannel(channel) {
         this.channel = channel;
     }
+    removeSpecificSongs(songPositions) {
+        this.newQueue.removeSpecificSongs(songPositions);
+    }
     setVolume(newVolume) {
-        newVolume = newVolume > 100 ? 100 : newVolume;
-        this.volume = newVolume * 0.001;
+        return __awaiter(this, void 0, void 0, function* () {
+            newVolume = newVolume > 100 ? 100 : newVolume;
+            this.volume = newVolume * 0.001;
+            return { success: true, data: this.volume / 0.001 };
+        });
     }
 }
 exports.MusicPlayer = MusicPlayer;

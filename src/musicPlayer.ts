@@ -2,14 +2,12 @@ import * as ytdl from "ytdl-core-discord";
 import {GuildMember, StreamDispatcher, VoiceChannel, VoiceConnection, Message} from "discord.js";
 import {QueueSong, ResponseObject} from "../types/types";
 import {videoInfo} from "ytdl-core";
-import * as Discord from "discord.js";
 import {Queue} from "./queue";
 
 export class MusicPlayer {
     private channel: VoiceChannel | undefined;
     private connection:VoiceConnection;
     private volume: number;
-    private readonly queue: Array<QueueSong>;
     private newQueue:Queue;
     private isPlaying:boolean;
     private timeToNextSongInSeconds:number;
@@ -18,7 +16,6 @@ export class MusicPlayer {
 
     constructor() {
         this.volume = 0.1;
-        this.queue = [];
         this.newQueue = new Queue();
         this.isPlaying = false;
         this.dispatcher = undefined;
@@ -41,8 +38,9 @@ export class MusicPlayer {
             let response:videoInfo = await ytdl.getBasicInfo(songLink);
             this.setChannel(channel);
             this.timeToNextSongInSeconds += parseInt(response.videoDetails.lengthSeconds);
-            this.newQueue.addSong({title: response.videoDetails.title, link: songLink});
-            this.joinChannelToPlayMusic();
+            if (this.newQueue.addSong({title: response.videoDetails.title, link: songLink})) {
+                this.joinChannelToPlayMusic();
+            }
             return { success: true, data: response.videoDetails.title }
 
         } catch (e) {
@@ -73,15 +71,15 @@ export class MusicPlayer {
     }
 
     async playMusic() {
-        let newNextSong:QueueSong = this.newQueue.getNextSong();
-        this.dispatcher = this.connection.play(await ytdl(newNextSong.link), {
+        let nextSong:QueueSong = this.newQueue.getNextSong();
+        this.dispatcher = this.connection.play(await ytdl(nextSong.link), {
             type: "opus",
             volume: this.volume
         }).on("start", () => {
 
         }).on("finish", () => {
-            if (this.queue.length > 0) {
-                this.queue.shift();
+            if (this.newQueue.skipCurrentSong()) {
+                this.playMusic();
             } else {
                 this.isPlaying = false;
             }
@@ -99,13 +97,22 @@ export class MusicPlayer {
         return this.channel !== undefined;
     }
 
+    shuffle() {
+        this.newQueue.shuffleQueue();
+    }
+
     setChannel(channel:VoiceChannel) {
         this.channel = channel;
     }
 
-    setVolume(newVolume:number) {
+    removeSpecificSongs(songPositions:Array<string>) {
+        this.newQueue.removeSpecificSongs(songPositions);
+    }
+
+    async setVolume(newVolume:number): Promise<ResponseObject> {
         newVolume = newVolume > 100 ? 100 : newVolume;
         this.volume = newVolume * 0.001;
+        return {success: true, data: this.volume/0.001}
     }
 
 }

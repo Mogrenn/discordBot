@@ -10,6 +10,7 @@ export class Queue {
 
     addSong(song:QueueSong) {
         this.queue.push(song);
+        return this.queue.length === 1;
     }
 
     getNextSong() {
@@ -43,7 +44,7 @@ export class Queue {
     }
 
     shuffleQueue() {
-
+        this.queue.sort(() => Math.random() - 0.5);
     }
 
     skipNextSong() {
@@ -52,8 +53,14 @@ export class Queue {
         }
     }
 
-    removeSpecificSongs(songPositions:number) {
+    removeSpecificSongs(songPositions:Array<string>) {
+        for (let i = 0; i < songPositions.length; i++) {
+            this.removeSong(songPositions[i]+i);
+        }
+    }
 
+    private removeSong(songPosition:string) {
+        this.queue.splice(parseInt(songPosition));
     }
 
     getSize() {

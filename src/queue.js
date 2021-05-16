@@ -17,6 +17,7 @@ class Queue {
     }
     addSong(song) {
         this.queue.push(song);
+        return this.queue.length === 1;
     }
     getNextSong() {
         return this.queue[0];
@@ -45,6 +46,7 @@ class Queue {
         return queueEmbed;
     }
     shuffleQueue() {
+        this.queue.sort(() => Math.random() - 0.5);
     }
     skipNextSong() {
         if (this.queue.length >= 2) {
@@ -52,6 +54,12 @@ class Queue {
         }
     }
     removeSpecificSongs(songPositions) {
+        for (let i = 0; i < songPositions.length; i++) {
+            this.removeSong(songPositions[i] + i);
+        }
+    }
+    removeSong(songPosition) {
+        this.queue.splice(songPosition);
     }
     getSize() {
         return this.queue.length;

@@ -71,6 +71,12 @@ async function commandResolver(command:CommandResolver) {
         case 'skip':
             await skipCurrentSong();
             break;
+        case 'shuffle':
+            await shuffle();
+            break;
+        case 'remove':
+            await removeSpecificSongs(command.message, args)
+            break;
         case 'hl':
         case 'higherorlower':
             break;
@@ -102,6 +108,10 @@ async function playMusic(arg, channel:VoiceChannel) {
     });
 }
 
+async function shuffle() {
+    player.shuffle();
+}
+
 async function leaveVoiceChannel(msg) {
     player.leave(msg.guild);
 }
@@ -111,7 +121,10 @@ async function joinVoiceChannel(msg) {
 }
 
 async function changeVolume(newVolume:number) {
-    player.setVolume(newVolume);
+    let response = await player.setVolume(newVolume);
+    if (response.success) {
+        await sendMessageToBotChannel("")
+    }
 }
 
 async function skipNextSong() {
@@ -124,6 +137,10 @@ async function skipCurrentSong() {
 
 async function showQueue(msg:Message) {
     await player.listQueue(msg);
+}
+
+async function removeSpecificSongs(msg:Message, args:string) {
+    player.removeSpecificSongs(args.split(","));
 }
 
 //Cherrys bot
