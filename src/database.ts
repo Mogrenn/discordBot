@@ -20,7 +20,7 @@ export class DataBaseAccess {
             }
 
         } catch(err) {
-            console.warn(err)
+            return {success: false, data: err, rowcount: 0}
         } finally {
             if (conn) await conn.release();
         }
