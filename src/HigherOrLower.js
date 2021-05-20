@@ -19,7 +19,9 @@ class HigherOrLower {
         this.init();
     }
     init() {
-        this.msg.reply(`Higher or Lower ${this.initNumber}`);
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.msg.reply(`Higher or Lower ${this.initNumber}`);
+        });
     }
     playerGuess(guess) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -36,7 +38,9 @@ class HigherOrLower {
         });
     }
     getAuthor() {
-        return this.author;
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.author;
+        });
     }
     generateNumber() {
         return Math.floor(Math.random() * 100) + 1;

@@ -1,16 +1,21 @@
+require("dotenv").config(); //Must add path for prod
 import { MusicPlayer } from "./musicPlayer";
 import { HigherOrLower } from "./HigherOrLower";
 import { CommandResolver } from "../types/types"
 import * as Discord from "discord.js";
 import { Message, VoiceChannel } from "discord.js";
+import {DataBaseAccess} from "./database";
 
 
 const client = new Discord.Client();
-const botChannel = "832950711691247636";
+//const botChannel = "832950711691247636";
 let player = new MusicPlayer();
+const db = new DataBaseAccess();
+const higherOrLowerGames: Array<HigherOrLower> = [];
 
 client.on("ready", () => {
     console.log("ready");
+
 });
 
 client.on("message", async (msg) => {
@@ -79,10 +84,14 @@ async function commandResolver(command:CommandResolver) {
             break;
         case 'hl':
         case 'higherorlower':
+            higherOrLowerGames.push(new HigherOrLower(command.message))
             break;
         case 'g':
         case 'guess':
+            await playerGuess(command.message, args)
             break;
+        case "signup":
+            await dbRequest(command.message);
         default:
             break;
     }
@@ -90,7 +99,15 @@ async function commandResolver(command:CommandResolver) {
 
 async function sendMessageToBotChannel(messageToUser:string) {
     //@ts-ignore selects the wrong type so it cant find send when it works
-    client.channels.cache.get(botChannel).send(messageToUser);
+    //client.channels.cache.get(botChannel).send(messageToUser);
+}
+
+async function playerGuess(msg:Message, args:string) {
+    for (const game of higherOrLowerGames) {
+        if (await game.getAuthor() === msg.author) {
+            await game.playerGuess(args);
+        }
+    }
 }
 
 async function replyToAuthor(msg:Message, messageToUser:string) {
@@ -108,6 +125,10 @@ async function playMusic(arg, channel:VoiceChannel) {
     });
 }
 
+async function dbRequest(msg:Message) {
+    await db.signUp({discordId: msg.author.id, discordUsername: msg.author.username})
+}
+
 async function shuffle() {
     player.shuffle();
 }
@@ -121,6 +142,7 @@ async function joinVoiceChannel(msg) {
 }
 
 async function changeVolume(newVolume:number) {
+    console.log("works")
     let response = await player.setVolume(newVolume);
     if (response.success) {
         await sendMessageToBotChannel("")
@@ -144,7 +166,7 @@ async function removeSpecificSongs(msg:Message, args:string) {
 }
 
 //Cherrys bot
-
+//client.login(process.env.DISCORD_API_TOKEN_PROD);
 if (process.env.MODE === "dev") {
     client.login(process.env.DISCORD_API_TOKEN_DEV);
 } else if (process.env.MODE === "prod") {

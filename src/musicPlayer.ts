@@ -110,8 +110,13 @@ export class MusicPlayer {
     }
 
     async setVolume(newVolume:number): Promise<ResponseObject> {
-        newVolume = newVolume > 100 ? 100 : newVolume;
-        this.volume = newVolume * 0.001;
+        let tempNewVolume = newVolume > 100 ? 100 : newVolume;
+        console.log(tempNewVolume)
+        if (this.isPlaying) {
+            this.dispatcher.setVolume(newVolume);
+            console.log("test2")
+        }
+        this.volume = tempNewVolume * 0.001;
         return {success: true, data: this.volume/0.001}
     }
 

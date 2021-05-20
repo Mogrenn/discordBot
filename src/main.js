@@ -9,11 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv").config(); //Must add path for prod
 const musicPlayer_1 = require("./musicPlayer");
+const HigherOrLower_1 = require("./HigherOrLower");
 const Discord = require("discord.js");
+const database_1 = require("./database");
 const client = new Discord.Client();
-const botChannel = "832950711691247636";
+//const botChannel = "832950711691247636";
 let player = new musicPlayer_1.MusicPlayer();
+const db = new database_1.DataBaseAccess();
+const higherOrLowerGames = [];
 client.on("ready", () => {
     console.log("ready");
 });
@@ -84,10 +89,14 @@ function commandResolver(command) {
                 break;
             case 'hl':
             case 'higherorlower':
+                higherOrLowerGames.push(new HigherOrLower_1.HigherOrLower(command.message));
                 break;
             case 'g':
             case 'guess':
+                yield playerGuess(command.message, args);
                 break;
+            case "signup":
+                yield dbRequest(command.message);
             default:
                 break;
         }
@@ -96,7 +105,16 @@ function commandResolver(command) {
 function sendMessageToBotChannel(messageToUser) {
     return __awaiter(this, void 0, void 0, function* () {
         //@ts-ignore selects the wrong type so it cant find send when it works
-        client.channels.cache.get(botChannel).send(messageToUser);
+        //client.channels.cache.get(botChannel).send(messageToUser);
+    });
+}
+function playerGuess(msg, args) {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (const game of higherOrLowerGames) {
+            if ((yield game.getAuthor()) === msg.author) {
+                yield game.playerGuess(args);
+            }
+        }
     });
 }
 function replyToAuthor(msg, messageToUser) {
@@ -117,6 +135,11 @@ function playMusic(arg, channel) {
         });
     });
 }
+function dbRequest(msg) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield db.signUp({ discordId: msg.author.id, discordUsername: msg.author.username });
+    });
+}
 function shuffle() {
     return __awaiter(this, void 0, void 0, function* () {
         player.shuffle();
@@ -134,6 +157,7 @@ function joinVoiceChannel(msg) {
 }
 function changeVolume(newVolume) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log("works");
         let response = yield player.setVolume(newVolume);
         if (response.success) {
             yield sendMessageToBotChannel("");
@@ -161,6 +185,7 @@ function removeSpecificSongs(msg, args) {
     });
 }
 //Cherrys bot
+//client.login(process.env.DISCORD_API_TOKEN_PROD);
 if (process.env.MODE === "dev") {
     client.login(process.env.DISCORD_API_TOKEN_DEV);
 }

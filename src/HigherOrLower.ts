@@ -12,8 +12,8 @@ export class HigherOrLower {
         this.init();
     }
 
-    init() {
-        this.msg.reply(`Higher or Lower ${this.initNumber}`);
+    async init() {
+        await this.msg.reply(`Higher or Lower ${this.initNumber}`);
     }
 
     async playerGuess(guess) {
@@ -27,7 +27,7 @@ export class HigherOrLower {
         }
     }
 
-    getAuthor() {
+    async getAuthor() {
         return this.author;
     }
 

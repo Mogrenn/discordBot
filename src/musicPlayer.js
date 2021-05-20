@@ -104,8 +104,13 @@ class MusicPlayer {
     }
     setVolume(newVolume) {
         return __awaiter(this, void 0, void 0, function* () {
-            newVolume = newVolume > 100 ? 100 : newVolume;
-            this.volume = newVolume * 0.001;
+            let tempNewVolume = newVolume > 100 ? 100 : newVolume;
+            console.log(tempNewVolume);
+            if (this.isPlaying) {
+                this.dispatcher.setVolume(newVolume);
+                console.log("test2");
+            }
+            this.volume = tempNewVolume * 0.001;
             return { success: true, data: this.volume / 0.001 };
         });
     }

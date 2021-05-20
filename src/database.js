@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DataBaseAccess = void 0;
 const mariadb = require('mariadb');
 class DataBaseAccess {
     constructor() {
@@ -19,12 +20,13 @@ class DataBaseAccess {
             let conn;
             try {
                 conn = yield this.pool.getConnection();
-                //TODO: Fix the last things here
                 let result = yield conn.query(sql, args);
-                return { success: true, data: result };
+                if (result.length > 0) {
+                    return { success: true, data: result, rowcount: result.length };
+                }
             }
             catch (err) {
-                return { success: false, error: err };
+                console.warn(err);
             }
             finally {
                 if (conn)
@@ -32,5 +34,15 @@ class DataBaseAccess {
             }
         });
     }
+    signUp(args) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.Query(`
+            INSERT INTO user
+                (discord_id, username)
+            VALUES(?, ?)
+        `, [args.discordId, args.discordUsername]);
+        });
+    }
 }
+exports.DataBaseAccess = DataBaseAccess;
 //# sourceMappingURL=database.js.map
