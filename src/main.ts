@@ -4,7 +4,8 @@ import { HigherOrLower } from "./HigherOrLower";
 import { CommandResolver } from "../types/types"
 import * as Discord from "discord.js";
 import { Message, VoiceChannel } from "discord.js";
-import {DataBaseAccess} from "./database";
+import { DataBaseAccess } from "./database";
+import { Roll } from "./roll"
 
 
 const client = new Discord.Client();
@@ -12,6 +13,7 @@ const client = new Discord.Client();
 let player = new MusicPlayer();
 const db = new DataBaseAccess();
 const higherOrLowerGames: Array<HigherOrLower> = [];
+const rollGames: Array<Roll> = [];
 
 client.on("ready", () => {
     console.log("ready");
@@ -80,18 +82,21 @@ async function commandResolver(command:CommandResolver) {
             await shuffle();
             break;
         case 'remove':
-            await removeSpecificSongs(command.message, args)
+            await removeSpecificSongs(command.message, args);
             break;
         case 'hl':
         case 'higherorlower':
-            higherOrLowerGames.push(new HigherOrLower(command.message))
+            higherOrLowerGames.push(new HigherOrLower(command.message));
             break;
         case 'g':
         case 'guess':
-            await playerGuess(command.message, args)
+            await playerGuess(command.message, args);
             break;
         case "signup":
             await dbRequest(command.message);
+            break;
+        case "startRoll":
+            await startRollGame(command.message, args);
         default:
             break;
     }
@@ -110,6 +115,20 @@ async function playerGuess(msg:Message, args:string) {
     }
 }
 
+async function startRollGame(msg: Message, args:string) {
+    if (rollGames.length === 0) {
+        let arg = args.split(" ");
+        rollGames.push(new Roll({min: parseInt(arg[0]), max: parseInt(arg[1]), amountOfPeople: parseInt(arg[2]), dbAccess: db}));
+        await msg.reply("Game has been created")
+    } else {
+        await msg.reply("Wait until the game has finished");
+    }
+}
+
+async function roll(msg, arg) {
+
+}
+
 async function replyToAuthor(msg:Message, messageToUser:string) {
     await msg.reply(messageToUser)
 }
@@ -126,7 +145,17 @@ async function playMusic(arg, channel:VoiceChannel) {
 }
 
 async function dbRequest(msg:Message) {
-    await db.signUp({discordId: msg.author.id, discordUsername: msg.author.username})
+    let result = await db.signUp({discordId: msg.author.id, discordUsername: msg.author.username});
+
+    if (result.success) {
+        await msg.reply("You have been sign up with a 500 credit bonus");
+    } else {
+        await msg.reply("You can only sign up once");
+    }
+}
+
+async function giveMoney() {
+
 }
 
 async function shuffle() {
@@ -165,8 +194,6 @@ async function removeSpecificSongs(msg:Message, args:string) {
     player.removeSpecificSongs(args.split(","));
 }
 
-//Cherrys bot
-//client.login(process.env.DISCORD_API_TOKEN_PROD);
 if (process.env.MODE === "dev") {
     client.login(process.env.DISCORD_API_TOKEN_DEV);
 } else if (process.env.MODE === "prod") {

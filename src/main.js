@@ -14,11 +14,13 @@ const musicPlayer_1 = require("./musicPlayer");
 const HigherOrLower_1 = require("./HigherOrLower");
 const Discord = require("discord.js");
 const database_1 = require("./database");
+const roll_1 = require("./roll");
 const client = new Discord.Client();
 //const botChannel = "832950711691247636";
 let player = new musicPlayer_1.MusicPlayer();
 const db = new database_1.DataBaseAccess();
 const higherOrLowerGames = [];
+const rollGames = [];
 client.on("ready", () => {
     console.log("ready");
 });
@@ -97,6 +99,9 @@ function commandResolver(command) {
                 break;
             case "signup":
                 yield dbRequest(command.message);
+                break;
+            case "startRoll":
+                yield startRollGame(command.message, args);
             default:
                 break;
         }
@@ -115,6 +120,22 @@ function playerGuess(msg, args) {
                 yield game.playerGuess(args);
             }
         }
+    });
+}
+function startRollGame(msg, args) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (rollGames.length === 0) {
+            let arg = args.split(" ");
+            rollGames.push(new roll_1.Roll({ min: parseInt(arg[0]), max: parseInt(arg[1]), amountOfPeople: parseInt(arg[2]), dbAccess: db }));
+            yield msg.reply("Game has been created");
+        }
+        else {
+            yield msg.reply("Wait until the game has finished");
+        }
+    });
+}
+function roll(msg, arg) {
+    return __awaiter(this, void 0, void 0, function* () {
     });
 }
 function replyToAuthor(msg, messageToUser) {
@@ -137,7 +158,17 @@ function playMusic(arg, channel) {
 }
 function dbRequest(msg) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield db.signUp({ discordId: msg.author.id, discordUsername: msg.author.username });
+        let result = yield db.signUp({ discordId: msg.author.id, discordUsername: msg.author.username });
+        if (result.success) {
+            yield msg.reply("You have been sign up with a 500 credit bonus");
+        }
+        else {
+            yield msg.reply("You can only sign up once");
+        }
+    });
+}
+function giveMoney() {
+    return __awaiter(this, void 0, void 0, function* () {
     });
 }
 function shuffle() {
@@ -184,8 +215,6 @@ function removeSpecificSongs(msg, args) {
         player.removeSpecificSongs(args.split(","));
     });
 }
-//Cherrys bot
-//client.login(process.env.DISCORD_API_TOKEN_PROD);
 if (process.env.MODE === "dev") {
     client.login(process.env.DISCORD_API_TOKEN_DEV);
 }
