@@ -171,7 +171,6 @@ async function joinVoiceChannel(msg) {
 }
 
 async function changeVolume(newVolume:number) {
-    console.log("works")
     let response = await player.setVolume(newVolume);
     if (response.success) {
         await sendMessageToBotChannel("")

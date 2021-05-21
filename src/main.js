@@ -188,7 +188,6 @@ function joinVoiceChannel(msg) {
 }
 function changeVolume(newVolume) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log("works");
         let response = yield player.setVolume(newVolume);
         if (response.success) {
             yield sendMessageToBotChannel("");
